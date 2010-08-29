@@ -4,216 +4,155 @@
   <!-- interface-naming-policy project-wide -->
   <widget class="GtkWindow" id="window1">
     <child>
-      <widget class="GtkHBox" id="hbox1">
+      <widget class="GtkVBox" id="vbox3">
         <property name="visible">True</property>
-        <property name="spacing">10</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">15</property>
         <child>
-          <widget class="GtkVBox" id="vbox3">
+          <widget class="GtkMenuBar" id="menubar1">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
-            <property name="spacing">15</property>
             <child>
-              <widget class="GtkHBox" id="hbox2">
+              <widget class="GtkMenuItem" id="Ikkunat">
                 <property name="visible">True</property>
-                <property name="homogeneous">True</property>
+                <property name="label" translatable="yes">Ikkunat</property>
+                <property name="use_underline">True</property>
                 <child>
-                  <widget class="GtkFrame" id="frame1">
+                  <widget class="GtkMenu" id="menu1">
                     <property name="visible">True</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
                     <child>
-                      <widget class="GtkAlignment" id="alignment1">
+                      <widget class="GtkCheckMenuItem" id="weighingStatusMenuItem">
                         <property name="visible">True</property>
-                        <property name="left_padding">12</property>
+                        <property name="label" translatable="yes">Punnitus</property>
+                        <property name="use_underline">True</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkCheckMenuItem" id="statisticsMenuItem">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Tilastotiedot</property>
+                        <property name="use_underline">True</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkCheckMenuItem" id="recentLoadsMenuItem">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Viimeisimm&#xE4;t kuormat</property>
+                        <property name="use_underline">True</property>
+                      </widget>
+                    </child>
+                    <child>
+                      <widget class="GtkCheckMenuItem" id="grainPricesMenuItem">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">Viljojen hinnat</property>
+                        <property name="use_underline">True</property>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox2">
+            <property name="visible">True</property>
+            <property name="homogeneous">True</property>
+            <child>
+              <widget class="GtkFrame" id="frame1">
+                <property name="visible">True</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">none</property>
+                <child>
+                  <widget class="GtkAlignment" id="alignment1">
+                    <property name="visible">True</property>
+                    <property name="left_padding">12</property>
+                    <child>
+                      <widget class="GtkVBox" id="vbox4">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">2</property>
                         <child>
-                          <widget class="GtkVBox" id="vbox4">
+                          <widget class="GtkComboBox" id="boxSellers">
                             <property name="visible">True</property>
-                            <property name="orientation">vertical</property>
-                            <property name="spacing">2</property>
-                            <child>
-                              <widget class="GtkComboBox" id="boxSellers">
-                                <property name="visible">True</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkButton" id="buttonAddSeller">
-                                <property name="label" translatable="yes">Lis&#xE4;&#xE4; is&#xE4;nt&#xE4;</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
                           </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkButton" id="buttonAddSeller">
+                            <property name="label" translatable="yes">Lis&#xE4;&#xE4; is&#xE4;nt&#xE4;</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                          </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </widget>
                     </child>
-                    <child>
-                      <widget class="GtkLabel" id="label1">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Is&#xE4;nt&#xE4;&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </widget>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
-                    </child>
                   </widget>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
-                  <widget class="GtkFrame" id="frame2">
+                  <widget class="GtkLabel" id="label1">
                     <property name="visible">True</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
-                    <child>
-                      <widget class="GtkAlignment" id="alignment2">
-                        <property name="visible">True</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <widget class="GtkVBox" id="vbox6">
-                            <property name="visible">True</property>
-                            <property name="orientation">vertical</property>
-                            <property name="spacing">2</property>
-                            <child>
-                              <widget class="GtkComboBox" id="boxCars">
-                                <property name="visible">True</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkButton" id="buttonAddCar">
-                                <property name="label" translatable="yes">Lis&#xE4;&#xE4; k&#xE4;rry</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="receives_default">True</property>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label2">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">&lt;b&gt;K&#xE4;rry&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </widget>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
-                    </child>
+                    <property name="label" translatable="yes">&lt;b&gt;Is&#xE4;nt&#xE4;&lt;/b&gt;</property>
+                    <property name="use_markup">True</property>
                   </widget>
                   <packing>
-                    <property name="expand">False</property>
-                    <property name="position">1</property>
+                    <property name="type">label_item</property>
                   </packing>
                 </child>
               </widget>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">False</property>
                 <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkFrame" id="frame3">
+              <widget class="GtkFrame" id="frame2">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">none</property>
                 <child>
-                  <widget class="GtkAlignment" id="alignment3">
+                  <widget class="GtkAlignment" id="alignment2">
                     <property name="visible">True</property>
                     <property name="left_padding">12</property>
                     <child>
-                      <widget class="GtkTable" id="table3">
+                      <widget class="GtkVBox" id="vbox6">
                         <property name="visible">True</property>
-                        <property name="n_rows">3</property>
-                        <property name="n_columns">2</property>
-                        <property name="row_spacing">10</property>
+                        <property name="orientation">vertical</property>
+                        <property name="spacing">2</property>
                         <child>
-                          <widget class="GtkRadioButton" id="radioWeighAsEmpty">
-                            <property name="label" translatable="yes">Punnitus tyhj&#xE4;n&#xE4;</property>
+                          <widget class="GtkComboBox" id="boxCars">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
                           </widget>
                           <packing>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options">GTK_FILL</property>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkRadioButton" id="radioWeighAsFull">
-                            <property name="label" translatable="yes">Punnitus t&#xE4;yten&#xE4;</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="draw_indicator">True</property>
-                            <property name="group">radioWeighAsEmpty</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">1</property>
-                            <property name="bottom_attach">2</property>
-                            <property name="x_options">GTK_FILL</property>
-                            <property name="y_options">GTK_FILL</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkButton" id="buttonMeasureWeights">
-                            <property name="label" translatable="yes">Punnitse! (F11)</property>
+                          <widget class="GtkButton" id="buttonAddCar">
+                            <property name="label" translatable="yes">Lis&#xE4;&#xE4; k&#xE4;rry</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <accelerator key="F11" signal="activate"/>
                           </widget>
                           <packing>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">2</property>
-                            <property name="bottom_attach">3</property>
-                            <property name="x_options">GTK_EXPAND</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkTable" id="tableWeights">
-                            <property name="visible">True</property>
-                            <property name="n_rows">2</property>
-                            <property name="row_spacing">10</property>
-                            <property name="homogeneous">True</property>
-                            <child>
-                              <placeholder/>
-                            </child>
-                            <child>
-                              <placeholder/>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="bottom_attach">2</property>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                       </widget>
@@ -221,9 +160,9 @@
                   </widget>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="label3">
+                  <widget class="GtkLabel" id="label2">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Akselipainot&lt;/b&gt;</property>
+                    <property name="label" translatable="yes">&lt;b&gt;K&#xE4;rry&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                   </widget>
                   <packing>
@@ -236,361 +175,147 @@
                 <property name="position">1</property>
               </packing>
             </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkFrame" id="frame3">
+            <property name="visible">True</property>
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">none</property>
             <child>
-              <widget class="GtkHBox" id="hbox8">
+              <widget class="GtkAlignment" id="alignment3">
                 <property name="visible">True</property>
-                <property name="homogeneous">True</property>
+                <property name="left_padding">12</property>
                 <child>
-                  <widget class="GtkFrame" id="frame11">
+                  <widget class="GtkTable" id="table3">
                     <property name="visible">True</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
+                    <property name="n_rows">3</property>
+                    <property name="n_columns">2</property>
+                    <property name="row_spacing">10</property>
                     <child>
-                      <widget class="GtkAlignment" id="alignment12">
+                      <widget class="GtkRadioButton" id="radioWeighAsEmpty">
+                        <property name="label" translatable="yes">Punnitus tyhj&#xE4;n&#xE4;</property>
                         <property name="visible">True</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <widget class="GtkHBox" id="hbox10">
-                            <property name="visible">True</property>
-                            <property name="spacing">4</property>
-                            <child>
-                              <widget class="GtkLabel" id="netWeightLabel">
-                                <property name="visible">True</property>
-                                <property name="xalign">1</property>
-                                <property name="label" translatable="yes">0</property>
-                              </widget>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="labelkg">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes">kg</property>
-                              </widget>
-                              <packing>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label16">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Netto&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
                       </widget>
                       <packing>
-                        <property name="type">label_item</property>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options">GTK_FILL</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="radioWeighAsFull">
+                        <property name="label" translatable="yes">Punnitus t&#xE4;yten&#xE4;</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">radioWeighAsEmpty</property>
+                      </widget>
+                      <packing>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
+                        <property name="x_options">GTK_FILL</property>
+                        <property name="y_options">GTK_FILL</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="buttonMeasureWeights">
+                        <property name="label" translatable="yes">Punnitse! (F11)</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <accelerator key="F11" signal="activate"/>
+                      </widget>
+                      <packing>
+                        <property name="right_attach">2</property>
+                        <property name="top_attach">2</property>
+                        <property name="bottom_attach">3</property>
+                        <property name="x_options">GTK_EXPAND</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkTable" id="tableWeights">
+                        <property name="visible">True</property>
+                        <property name="n_rows">2</property>
+                        <property name="row_spacing">10</property>
+                        <property name="homogeneous">True</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="left_attach">1</property>
+                        <property name="right_attach">2</property>
+                        <property name="bottom_attach">2</property>
                       </packing>
                     </child>
                   </widget>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkFrame" id="frame5">
-                    <property name="visible">True</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
-                    <child>
-                      <widget class="GtkAlignment" id="alignment5">
-                        <property name="visible">True</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <widget class="GtkHBox" id="hbox11">
-                            <property name="visible">True</property>
-                            <property name="spacing">4</property>
-                            <child>
-                              <widget class="GtkLabel" id="fullWeightLabel">
-                                <property name="visible">True</property>
-                                <property name="xalign">1</property>
-                                <property name="label" translatable="yes">0</property>
-                              </widget>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="labelkg1">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes">kg</property>
-                              </widget>
-                              <packing>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label24">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Brutto&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </widget>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkFrame" id="frame12">
-                    <property name="visible">True</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
-                    <child>
-                      <widget class="GtkAlignment" id="alignment9">
-                        <property name="visible">True</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <widget class="GtkHBox" id="hbox12">
-                            <property name="visible">True</property>
-                            <property name="spacing">4</property>
-                            <child>
-                              <widget class="GtkLabel" id="tareWeightLabel">
-                                <property name="visible">True</property>
-                                <property name="xalign">1</property>
-                                <property name="label" translatable="yes">0</property>
-                              </widget>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="labelkg2">
-                                <property name="visible">True</property>
-                                <property name="xalign">0</property>
-                                <property name="label" translatable="yes">kg</property>
-                              </widget>
-                              <packing>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label25">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Taara&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </widget>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="position">2</property>
-                  </packing>
                 </child>
               </widget>
-              <packing>
-                <property name="position">2</property>
-              </packing>
             </child>
             <child>
-              <widget class="GtkHBox" id="hbox5">
+              <widget class="GtkLabel" id="label3">
                 <property name="visible">True</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <widget class="GtkFrame" id="frame10">
-                    <property name="visible">True</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
-                    <child>
-                      <widget class="GtkAlignment" id="alignment10">
-                        <property name="visible">True</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <widget class="GtkHBox" id="hbox9">
-                            <property name="visible">True</property>
-                            <child>
-                              <widget class="GtkEntry" id="dryEntry">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="invisible_char">&#x25CF;</property>
-                              </widget>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <widget class="GtkLabel" id="label23">
-                                <property name="visible">True</property>
-                                <property name="label" translatable="yes">%</property>
-                              </widget>
-                              <packing>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="frame">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Kuiva-aine&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </widget>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkFrame" id="frame13">
-                    <property name="visible">True</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
-                    <child>
-                      <widget class="GtkAlignment" id="alignment13">
-                        <property name="visible">True</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <widget class="GtkEntry" id="entry1">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="invisible_char">&#x25CF;</property>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label13">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Hehtolitrapaino&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </widget>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkFrame" id="frame9">
-                    <property name="visible">True</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
-                    <child>
-                      <widget class="GtkAlignment" id="alignment11">
-                        <property name="visible">True</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <widget class="GtkEntry" id="sampleNumEntry">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="invisible_char">&#x25CF;</property>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label14">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">&lt;b&gt;N&#xE4;ytenumero&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </widget>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
+                <property name="label" translatable="yes">&lt;b&gt;Akselipainot&lt;/b&gt;</property>
+                <property name="use_markup">True</property>
               </widget>
               <packing>
-                <property name="position">3</property>
+                <property name="type">label_item</property>
               </packing>
             </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="position">2</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox8">
+            <property name="visible">True</property>
+            <property name="homogeneous">True</property>
             <child>
-              <widget class="GtkFrame" id="frame14">
+              <widget class="GtkFrame" id="frame11">
                 <property name="visible">True</property>
                 <property name="label_xalign">0</property>
                 <property name="shadow_type">none</property>
                 <child>
-                  <widget class="GtkAlignment" id="alignment14">
+                  <widget class="GtkAlignment" id="alignment12">
                     <property name="visible">True</property>
                     <property name="left_padding">12</property>
                     <child>
-                      <widget class="GtkHBox" id="hbox13">
+                      <widget class="GtkHBox" id="hbox10">
                         <property name="visible">True</property>
+                        <property name="spacing">4</property>
                         <child>
-                          <widget class="GtkRadioButton" id="radioOhra">
-                            <property name="label" translatable="yes">Ohra</property>
+                          <widget class="GtkLabel" id="netWeightLabel">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
+                            <property name="xalign">1</property>
+                            <property name="label" translatable="yes">0</property>
                           </widget>
                           <packing>
                             <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
-                          <widget class="GtkRadioButton" id="radioKaura">
-                            <property name="label" translatable="yes">Kaura</property>
+                          <widget class="GtkLabel" id="labelkg">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
-                            <property name="group">radioOhra</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">kg</property>
                           </widget>
                           <packing>
                             <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkRadioButton" id="radioVehna">
-                            <property name="label" translatable="yes">Vehn&#xE4;</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
-                            <property name="group">radioOhra</property>
-                          </widget>
-                          <packing>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkRadioButton" id="radioSeka">
-                            <property name="label" translatable="yes">Sekavilja</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="active">True</property>
-                            <property name="draw_indicator">True</property>
-                            <property name="group">radioOhra</property>
-                          </widget>
-                          <packing>
-                            <property name="position">3</property>
                           </packing>
                         </child>
                       </widget>
@@ -598,9 +323,9 @@
                   </widget>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="label26">
+                  <widget class="GtkLabel" id="label16">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">&lt;b&gt;Laji&lt;/b&gt;</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Netto&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                   </widget>
                   <packing>
@@ -609,96 +334,425 @@
                 </child>
               </widget>
               <packing>
-                <property name="position">4</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkHBox" id="hbox4">
+              <widget class="GtkFrame" id="frame5">
                 <property name="visible">True</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">none</property>
                 <child>
-                  <widget class="GtkFrame" id="frame7">
+                  <widget class="GtkAlignment" id="alignment5">
                     <property name="visible">True</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
+                    <property name="left_padding">12</property>
                     <child>
-                      <widget class="GtkAlignment" id="alignment7">
+                      <widget class="GtkHBox" id="hbox11">
                         <property name="visible">True</property>
-                        <property name="left_padding">12</property>
+                        <property name="spacing">4</property>
                         <child>
-                          <widget class="GtkLabel" id="dateLabel">
+                          <widget class="GtkLabel" id="fullWeightLabel">
                             <property name="visible">True</property>
-                            <property name="label" translatable="yes">(p&#xE4;iv&#xE4;ys)</property>
+                            <property name="xalign">1</property>
+                            <property name="label" translatable="yes">0</property>
                           </widget>
+                          <packing>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="labelkg1">
+                            <property name="visible">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">kg</property>
+                          </widget>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                       </widget>
                     </child>
-                    <child>
-                      <widget class="GtkLabel" id="label10">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">&lt;b&gt;P&#xE4;iv&#xE4;ys&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </widget>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
-                    </child>
                   </widget>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
-                  <widget class="GtkFrame" id="frame8">
+                  <widget class="GtkLabel" id="label24">
                     <property name="visible">True</property>
-                    <property name="label_xalign">0</property>
-                    <property name="shadow_type">none</property>
-                    <child>
-                      <widget class="GtkAlignment" id="alignment8">
-                        <property name="visible">True</property>
-                        <property name="left_padding">12</property>
-                        <child>
-                          <widget class="GtkLabel" id="timeLabel">
-                            <property name="visible">True</property>
-                            <property name="label" translatable="yes">(kellonaika)</property>
-                          </widget>
-                        </child>
-                      </widget>
-                    </child>
-                    <child>
-                      <widget class="GtkLabel" id="label11">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">&lt;b&gt;Kellonaika&lt;/b&gt;</property>
-                        <property name="use_markup">True</property>
-                      </widget>
-                      <packing>
-                        <property name="type">label_item</property>
-                      </packing>
-                    </child>
+                    <property name="label" translatable="yes">&lt;b&gt;Brutto&lt;/b&gt;</property>
+                    <property name="use_markup">True</property>
                   </widget>
                   <packing>
-                    <property name="position">1</property>
+                    <property name="type">label_item</property>
                   </packing>
                 </child>
               </widget>
               <packing>
-                <property name="position">5</property>
+                <property name="position">1</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="buttonRecordLoad">
-                <property name="label" translatable="yes">Tallenna kuorma (F12)</property>
+              <widget class="GtkFrame" id="frame12">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <accelerator key="F12" signal="activate"/>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">none</property>
+                <child>
+                  <widget class="GtkAlignment" id="alignment9">
+                    <property name="visible">True</property>
+                    <property name="left_padding">12</property>
+                    <child>
+                      <widget class="GtkHBox" id="hbox12">
+                        <property name="visible">True</property>
+                        <property name="spacing">4</property>
+                        <child>
+                          <widget class="GtkLabel" id="tareWeightLabel">
+                            <property name="visible">True</property>
+                            <property name="xalign">1</property>
+                            <property name="label" translatable="yes">0</property>
+                          </widget>
+                          <packing>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="labelkg2">
+                            <property name="visible">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">kg</property>
+                          </widget>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label25">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Taara&lt;/b&gt;</property>
+                    <property name="use_markup">True</property>
+                  </widget>
+                  <packing>
+                    <property name="type">label_item</property>
+                  </packing>
+                </child>
               </widget>
               <packing>
-                <property name="position">6</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </widget>
           <packing>
-            <property name="position">0</property>
+            <property name="position">3</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox5">
+            <property name="visible">True</property>
+            <property name="homogeneous">True</property>
+            <child>
+              <widget class="GtkFrame" id="frame10">
+                <property name="visible">True</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">none</property>
+                <child>
+                  <widget class="GtkAlignment" id="alignment10">
+                    <property name="visible">True</property>
+                    <property name="left_padding">12</property>
+                    <child>
+                      <widget class="GtkHBox" id="hbox9">
+                        <property name="visible">True</property>
+                        <child>
+                          <widget class="GtkEntry" id="dryEntry">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                          </widget>
+                          <packing>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label23">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">%</property>
+                          </widget>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="frame">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Kuiva-aine&lt;/b&gt;</property>
+                    <property name="use_markup">True</property>
+                  </widget>
+                  <packing>
+                    <property name="type">label_item</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkFrame" id="frame13">
+                <property name="visible">True</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">none</property>
+                <child>
+                  <widget class="GtkAlignment" id="alignment13">
+                    <property name="visible">True</property>
+                    <property name="left_padding">12</property>
+                    <child>
+                      <widget class="GtkHBox" id="hbox3">
+                        <property name="visible">True</property>
+                        <child>
+                          <widget class="GtkEntry" id="densityEntry">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="invisible_char">&#x25CF;</property>
+                          </widget>
+                          <packing>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="label28">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">kg/hl</property>
+                          </widget>
+                          <packing>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label13">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Hehtolitrapaino&lt;/b&gt;</property>
+                    <property name="use_markup">True</property>
+                  </widget>
+                  <packing>
+                    <property name="type">label_item</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkFrame" id="frame9">
+                <property name="visible">True</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">none</property>
+                <child>
+                  <widget class="GtkAlignment" id="alignment11">
+                    <property name="visible">True</property>
+                    <property name="left_padding">12</property>
+                    <child>
+                      <widget class="GtkEntry" id="sampleNumEntry">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="invisible_char">&#x25CF;</property>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label14">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">&lt;b&gt;N&#xE4;ytenumero&lt;/b&gt;</property>
+                    <property name="use_markup">True</property>
+                  </widget>
+                  <packing>
+                    <property name="type">label_item</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">2</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">4</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkFrame" id="frame14">
+            <property name="visible">True</property>
+            <property name="label_xalign">0</property>
+            <property name="shadow_type">none</property>
+            <child>
+              <widget class="GtkAlignment" id="alignment14">
+                <property name="visible">True</property>
+                <property name="left_padding">12</property>
+                <child>
+                  <widget class="GtkHBox" id="hbox13">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkRadioButton" id="radioOhra">
+                        <property name="label" translatable="yes">Ohra</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="active">True</property>
+                        <property name="draw_indicator">True</property>
+                      </widget>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="radioKaura">
+                        <property name="label" translatable="yes">Kaura</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">radioOhra</property>
+                      </widget>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="radioVehna">
+                        <property name="label" translatable="yes">Vehn&#xE4;</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">radioOhra</property>
+                      </widget>
+                      <packing>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkRadioButton" id="radioSeka">
+                        <property name="label" translatable="yes">Sekavilja</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
+                        <property name="draw_indicator">True</property>
+                        <property name="group">radioOhra</property>
+                      </widget>
+                      <packing>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                  </widget>
+                </child>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label26">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&lt;b&gt;Laji&lt;/b&gt;</property>
+                <property name="use_markup">True</property>
+              </widget>
+              <packing>
+                <property name="type">label_item</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">5</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkHBox" id="hbox4">
+            <property name="visible">True</property>
+            <child>
+              <widget class="GtkFrame" id="frame7">
+                <property name="visible">True</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">none</property>
+                <child>
+                  <widget class="GtkAlignment" id="alignment7">
+                    <property name="visible">True</property>
+                    <property name="left_padding">12</property>
+                    <child>
+                      <widget class="GtkLabel" id="dateLabel">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">(p&#xE4;iv&#xE4;ys)</property>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label10">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">&lt;b&gt;P&#xE4;iv&#xE4;ys&lt;/b&gt;</property>
+                    <property name="use_markup">True</property>
+                  </widget>
+                  <packing>
+                    <property name="type">label_item</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkFrame" id="frame8">
+                <property name="visible">True</property>
+                <property name="label_xalign">0</property>
+                <property name="shadow_type">none</property>
+                <child>
+                  <widget class="GtkAlignment" id="alignment8">
+                    <property name="visible">True</property>
+                    <property name="left_padding">12</property>
+                    <child>
+                      <widget class="GtkLabel" id="timeLabel">
+                        <property name="visible">True</property>
+                        <property name="label" translatable="yes">(kellonaika)</property>
+                      </widget>
+                    </child>
+                  </widget>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label11">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">&lt;b&gt;Kellonaika&lt;/b&gt;</property>
+                    <property name="use_markup">True</property>
+                  </widget>
+                  <packing>
+                    <property name="type">label_item</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">6</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkButton" id="buttonRecordLoad">
+            <property name="label" translatable="yes">Tallenna kuorma (F12)</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <accelerator key="F12" signal="activate"/>
+          </widget>
+          <packing>
+            <property name="position">7</property>
           </packing>
         </child>
       </widget>
@@ -849,68 +903,6 @@
         <property name="visible">True</property>
         <property name="orientation">vertical</property>
         <child>
-          <widget class="GtkFrame" id="frame4">
-            <property name="visible">True</property>
-            <property name="label_xalign">0</property>
-            <property name="shadow_type">none</property>
-            <child>
-              <widget class="GtkAlignment" id="alignment4">
-                <property name="visible">True</property>
-                <property name="left_padding">12</property>
-                <child>
-                  <widget class="GtkHBox" id="hbox3">
-                    <property name="visible">True</property>
-                    <child>
-                      <widget class="GtkRadioButton" id="radioStatisticsBySeller">
-                        <property name="label" translatable="yes">Is&#xE4;nn&#xE4;n mukaan</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                      </widget>
-                      <packing>
-                        <property name="fill">False</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkRadioButton" id="radioStatisticsBySector">
-                        <property name="label" translatable="yes">Lohkon mukaan</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
-                        <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
-                        <property name="group">radioStatisticsBySeller</property>
-                      </widget>
-                      <packing>
-                        <property name="fill">False</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </widget>
-                </child>
-              </widget>
-            </child>
-            <child>
-              <widget class="GtkLabel" id="label4">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">&lt;b&gt;Erittely&lt;/b&gt;</property>
-                <property name="use_markup">True</property>
-              </widget>
-              <packing>
-                <property name="type">label_item</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">False</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
-        <child>
           <widget class="GtkButton" id="buttonUpdateStatistics">
             <property name="label" translatable="yes">P&#xE4;ivit&#xE4; tilastotiedot</property>
             <property name="visible">True</property>
@@ -920,7 +912,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">False</property>
-            <property name="position">1</property>
+            <property name="position">0</property>
           </packing>
         </child>
         <child>
@@ -929,7 +921,7 @@
             <property name="can_focus">True</property>
           </widget>
           <packing>
-            <property name="position">2</property>
+            <property name="position">1</property>
           </packing>
         </child>
       </widget>
@@ -1125,23 +1117,13 @@
             <child>
               <widget class="GtkTable" id="table2">
                 <property name="visible">True</property>
-                <property name="n_rows">7</property>
+                <property name="n_rows">9</property>
                 <property name="n_columns">2</property>
                 <child>
                   <widget class="GtkLabel" id="Is&#xE4;nt&#xE4;">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Kuski</property>
+                    <property name="label" translatable="yes">Is&#xE4;nt&#xE4;</property>
                   </widget>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label12">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Lohko</property>
-                  </widget>
-                  <packing>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                  </packing>
                 </child>
                 <child>
                   <widget class="GtkLabel" id="label18">
@@ -1149,8 +1131,8 @@
                     <property name="label" translatable="yes">Nettopaino</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
+                    <property name="top_attach">3</property>
+                    <property name="bottom_attach">4</property>
                   </packing>
                 </child>
                 <child>
@@ -1159,8 +1141,8 @@
                     <property name="label" translatable="yes">Kuiva-aine</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">3</property>
-                    <property name="bottom_attach">4</property>
+                    <property name="top_attach">4</property>
+                    <property name="bottom_attach">5</property>
                   </packing>
                 </child>
                 <child>
@@ -1169,8 +1151,8 @@
                     <property name="label" translatable="yes">N&#xE4;ytenumero</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">4</property>
-                    <property name="bottom_attach">5</property>
+                    <property name="top_attach">6</property>
+                    <property name="bottom_attach">7</property>
                   </packing>
                 </child>
                 <child>
@@ -1179,8 +1161,8 @@
                     <property name="label" translatable="yes">P&#xE4;iv&#xE4;</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">5</property>
-                    <property name="bottom_attach">6</property>
+                    <property name="top_attach">7</property>
+                    <property name="bottom_attach">8</property>
                   </packing>
                 </child>
                 <child>
@@ -1189,8 +1171,8 @@
                     <property name="label" translatable="yes">Aika</property>
                   </widget>
                   <packing>
-                    <property name="top_attach">6</property>
-                    <property name="bottom_attach">7</property>
+                    <property name="top_attach">8</property>
+                    <property name="bottom_attach">9</property>
                   </packing>
                 </child>
                 <child>
@@ -1204,31 +1186,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="confirmSectorLabel">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">label</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">1</property>
-                    <property name="bottom_attach">2</property>
-                  </packing>
-                </child>
-                <child>
                   <widget class="GtkLabel" id="confirmWeightLabel">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">label</property>
-                  </widget>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="right_attach">2</property>
-                    <property name="top_attach">2</property>
-                    <property name="bottom_attach">3</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="confirmDryLabel">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">label</property>
                   </widget>
@@ -1240,7 +1198,7 @@
                   </packing>
                 </child>
                 <child>
-                  <widget class="GtkLabel" id="confirmSampleNumLabel">
+                  <widget class="GtkLabel" id="confirmDryLabel">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">label</property>
                   </widget>
@@ -1259,8 +1217,8 @@
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
-                    <property name="top_attach">5</property>
-                    <property name="bottom_attach">6</property>
+                    <property name="top_attach">7</property>
+                    <property name="bottom_attach">8</property>
                   </packing>
                 </child>
                 <child>
@@ -1271,13 +1229,104 @@
                   <packing>
                     <property name="left_attach">1</property>
                     <property name="right_attach">2</property>
+                    <property name="top_attach">8</property>
+                    <property name="bottom_attach">9</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label4">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Hehtolitrapaino</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="confirmDensityLabel">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">label</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">5</property>
+                    <property name="bottom_attach">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="confirmSampleNumLabel">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">label</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
                     <property name="top_attach">6</property>
                     <property name="bottom_attach">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="Laji">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Laji</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="confirmGrainTypeLabel">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">label</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">2</property>
+                    <property name="bottom_attach">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="label29">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Hinta-arvio</property>
+                  </widget>
+                  <packing>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkLabel" id="confirmPriceLabel">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">label</property>
+                  </widget>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="right_attach">2</property>
+                    <property name="top_attach">1</property>
+                    <property name="bottom_attach">2</property>
                   </packing>
                 </child>
               </widget>
               <packing>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkButton" id="printSampleNoteButton">
+                <property name="label" translatable="yes">Tulosta saate</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </widget>
@@ -1328,26 +1377,6 @@
       </widget>
     </child>
   </widget>
-  <widget class="GtkWindow" id="rawWeightWindow">
-    <property name="title" translatable="yes">Vaa'an lukema</property>
-    <child>
-      <widget class="GtkLabel" id="rawWeightLabel">
-        <property name="visible">True</property>
-        <property name="label" translatable="yes">&lt;span size="73728"&gt;0 kg&lt;/span&gt;</property>
-        <property name="use_markup">True</property>
-      </widget>
-    </child>
-  </widget>
-  <widget class="GtkWindow" id="activeAxleWindow">
-    <property name="title" translatable="yes">Punnittava akseli</property>
-    <child>
-      <widget class="GtkLabel" id="activeAxleLabel">
-        <property name="visible">True</property>
-        <property name="label" translatable="yes">&lt;span size="73728"&gt;0&lt;/span&gt;</property>
-        <property name="use_markup">True</property>
-      </widget>
-    </child>
-  </widget>
   <widget class="GtkWindow" id="lastLoadsWindow">
     <property name="height_request">100</property>
     <property name="title" translatable="yes">Viimeisimm&#xE4;t kuormat</property>
@@ -1355,6 +1384,344 @@
       <widget class="GtkTreeView" id="lastLoadsView">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkDialog" id="grainTypeDialog">
+    <property name="border_width">5</property>
+    <property name="type_hint">normal</property>
+    <property name="has_separator">False</property>
+    <child internal-child="vbox">
+      <widget class="GtkVBox" id="dialog-vbox6">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child>
+          <widget class="GtkTable" id="table4">
+            <property name="visible">True</property>
+            <property name="n_rows">2</property>
+            <property name="n_columns">3</property>
+            <property name="column_spacing">5</property>
+            <property name="row_spacing">3</property>
+            <child>
+              <widget class="GtkLabel" id="label9">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Ohra</property>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label12">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Kaura</property>
+              </widget>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label27">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Vehn&#xE4;</property>
+              </widget>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="right_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkVScale" id="ohraScale">
+                <property name="height_request">100</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="orientation">vertical</property>
+                <property name="adjustment">33 0 100 10 3 3</property>
+                <property name="inverted">True</property>
+                <property name="show_fill_level">True</property>
+                <property name="draw_value">False</property>
+              </widget>
+              <packing>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkVScale" id="kauraScale">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="orientation">vertical</property>
+                <property name="adjustment">33 0 100 10 3 3</property>
+                <property name="inverted">True</property>
+                <property name="show_fill_level">True</property>
+                <property name="draw_value">False</property>
+              </widget>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkVScale" id="vehnaScale">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="orientation">vertical</property>
+                <property name="adjustment">33 0 100 1 3 3</property>
+                <property name="inverted">True</property>
+                <property name="show_fill_level">True</property>
+                <property name="draw_value">False</property>
+              </widget>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="right_attach">3</property>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child internal-child="action_area">
+          <widget class="GtkHButtonBox" id="dialog-action_area6">
+            <property name="visible">True</property>
+            <property name="layout_style">end</property>
+            <child>
+              <widget class="GtkButton" id="button2">
+                <property name="label">gtk-ok</property>
+                <property name="response_id">2</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="expand">False</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkWindow" id="weighingStatusWindow">
+    <property name="width_request">600</property>
+    <child>
+      <widget class="GtkHBox" id="hbox1">
+        <property name="visible">True</property>
+        <property name="spacing">20</property>
+        <child>
+          <widget class="GtkVBox" id="vbox7">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <widget class="GtkLabel" id="label31">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&lt;span size="12288"&gt;Paino&lt;/span&gt;</property>
+                <property name="use_markup">True</property>
+              </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="rawWeightLabel">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&lt;span size="73728"&gt;0 kg&lt;/span&gt;</property>
+                <property name="use_markup">True</property>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkVBox" id="vbox1">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <widget class="GtkLabel" id="label30">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&lt;span size="12288"&gt;Punnittava akseli&lt;/span&gt;</property>
+                <property name="use_markup">True</property>
+              </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="activeAxleLabel">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&lt;span size="73728"&gt;0&lt;/span&gt;</property>
+                <property name="use_markup">True</property>
+              </widget>
+              <packing>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkWindow" id="grainPricesWindow">
+    <child>
+      <widget class="GtkVBox" id="vbox8">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <widget class="GtkTable" id="table5">
+            <property name="visible">True</property>
+            <property name="n_rows">3</property>
+            <property name="n_columns">3</property>
+            <child>
+              <widget class="GtkLabel" id="label32">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Ohra</property>
+              </widget>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label33">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Kaura</property>
+              </widget>
+              <packing>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label34">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">Vehn&#xE4;</property>
+              </widget>
+              <packing>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkEntry" id="ohraPrice">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+              </widget>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkEntry" id="kauraPrice">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+              </widget>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkEntry" id="vehnaPrice">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">&#x25CF;</property>
+              </widget>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="right_attach">2</property>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label35">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&#x20AC;/t</property>
+              </widget>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="right_attach">3</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label36">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&#x20AC;/t</property>
+              </widget>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="right_attach">3</property>
+                <property name="top_attach">1</property>
+                <property name="bottom_attach">2</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkLabel" id="label37">
+                <property name="visible">True</property>
+                <property name="label" translatable="yes">&#x20AC;/t</property>
+              </widget>
+              <packing>
+                <property name="left_attach">2</property>
+                <property name="right_attach">3</property>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
+              </packing>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkAlignment" id="alignment4">
+            <property name="visible">True</property>
+            <property name="xscale">0.20000000298023224</property>
+            <property name="yscale">0</property>
+            <property name="top_padding">4</property>
+            <property name="bottom_padding">5</property>
+            <child>
+              <widget class="GtkButton" id="storePricesButton">
+                <property name="label" translatable="yes">Tallenna n&#xE4;m&#xE4; hinnat</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </widget>
+            </child>
+          </widget>
+          <packing>
+            <property name="position">1</property>
+          </packing>
+        </child>
+        <child>
+          <widget class="GtkCalendar" id="grainPricesCalendar">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="show_week_numbers">True</property>
+          </widget>
+          <packing>
+            <property name="position">2</property>
+          </packing>
+        </child>
       </widget>
     </child>
   </widget>

@@ -18,6 +18,20 @@ insertRow h tab cs = do
 --    | isDigit x = nm
     | otherwise = '\'':toSQLString nm ++ "'"
 
+upsertRow h tab cs = do
+   let stmt = ("REPLACE INTO " ++ tab ++
+               tupled (toVals fst) ++ " VALUES " ++
+               tupled (toVals (quote.snd)) ++ ";")
+   execStatement_ h stmt
+  where
+   toVals f = map (toVal f) cs
+   toVal f p = f p -- ($ f)
+
+   quote "" = "''"
+   quote nm@(x:_)
+--    | isDigit x = nm
+    | otherwise = '\'':toSQLString nm ++ "'"
+
 
 tupled :: [String] -> String
 tupled xs = "(" ++ concat (intersperse ", " xs) ++ ")"
