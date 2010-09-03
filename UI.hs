@@ -155,9 +155,9 @@ setupWeightsDialogs db radioWeighAsEmpty radioWeighAsFull indexCurrentlyBeingWei
 
            entries@(emptyEntries, fullEntries) <- unzip `fmap` (forM [1..axles] $ 
                               \n -> do e1 <- entryNew
-                                       onEditableChanged e1  $ recordEmptyWeight db activeElement n e1
                                        e2 <- entryNew
                                        entrySetText e1 (weights !! (n - 1))
+                                       onEditableChanged e1  $ recordEmptyWeight db activeElement n e1
                                        entrySetWidthChars e1 5
                                        entrySetWidthChars e2 5
                                        tableAttach tableWeights e1 (n-1) n 0 1 [] [] 2 0 
@@ -362,7 +362,7 @@ doUI = do
   initGUI
 
   db <- openConnection "vaaka.db"
-  sampleNoteTemplatePixbuf <- pixbufNewFromFile "lappupohja.jpg"
+  sampleNoteTemplatePixbuf <- pixbufNewFromFile "lappupohja_pieni.jpg"
 
 
   weightEntriesRef <- newIORef ([], [])
@@ -418,7 +418,7 @@ doUI = do
   confirmTimeLabel <- xmlGetWidget windowXml castToLabel "confirmTimeLabel"
   confirmGrainTypeLabel <- xmlGetWidget windowXml castToLabel "confirmGrainTypeLabel"
   confirmPriceLabel <- xmlGetWidget windowXml castToLabel "confirmPriceLabel"
-  printSampleNoteButton <- xmlGetWidget windowXml castToButton "printSampleNoteButton"
+--  printSampleNoteButton <- xmlGetWidget windowXml castToButton "printSampleNoteButton"
                        
 
   statisticsWindow <- xmlGetWidget windowXml castToWindow "statisticsWindow"
@@ -562,8 +562,8 @@ doUI = do
 
                  loadId <- getLastRowID db
 
-                 ps <- on printSampleNoteButton buttonActivated $
-                   printSampleNote sampleNoteTemplatePixbuf time sampleNum grainTypeName
+--                 ps <- on printSampleNoteButton buttonActivated $
+--                   printSampleNote sampleNoteTemplatePixbuf time sampleNum grainTypeName
 
                  resp <- dialogRun confirmLoadDialog
                  case resp of
@@ -580,7 +580,7 @@ doUI = do
                           return ()
                  widgetHide confirmLoadDialog
           
-                 signalDisconnect ps
+--                 signalDisconnect ps
           (_, dryReads, sampleReads, densityReads) -> 
               complainAboutMissingData (case sellerIterM of 
                                           Nothing -> Just "kuski/isäntä"
