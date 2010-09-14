@@ -32,11 +32,11 @@ updateWeights netWeightLabel fullWeightLabel tareWeightLabel emptyEntries fullEn
 
 inputThread db activeAxleLabel rawWeightLabel netWeightLabel fullWeightLabel tareWeightLabel indexCurrentlyBeingWeighedRef weightEntriesRef takingWeightingsRef radioWeighAsEmpty = do
 
---  reportRawFun <- wrapReportRaw $ \cd -> postGUIAsync $ labelSetMarkup rawWeightLabel (markSpan [FontSize $ SizePoint 72] $ (show cd ++ " kg"))
-  let reportRawFun cd = postGUIAsync $ labelSetMarkup rawWeightLabel (markSpan [FontSize $ SizePoint 72] $ (show cd ++ " kg"))
+  reportRawFun <- wrapReportRaw $ \cd -> postGUIAsync $ labelSetMarkup rawWeightLabel (markSpan [FontSize $ SizePoint 72] $ (show cd ++ " kg"))
+--  let reportRawFun cd = postGUIAsync $ labelSetMarkup rawWeightLabel (markSpan [FontSize $ SizePoint 72] $ (show cd ++ " kg"))
 
---  reportFun <- wrapReportProcessed $ \cd ci -> postGUIAsync $ do
-  let reportFun cd ci = postGUIAsync $ do
+  reportFun <- wrapReportProcessed $ \cd ci -> postGUIAsync $ do
+--  let reportFun cd ci = postGUIAsync $ do
                  takingWeightings <- readIORef takingWeightingsRef
                  when takingWeightings $
                       do (emptyEntries, fullEntries) <- readIORef weightEntriesRef
@@ -52,10 +52,10 @@ inputThread db activeAxleLabel rawWeightLabel netWeightLabel fullWeightLabel tar
                                        when (toEnum (fromEnum ci) == 1) $ 
                                             modifyIORef indexCurrentlyBeingWeighedRef succ
 
-  mockInputC reportFun reportRawFun
+--  mockInputC reportFun reportRawFun
 
 
---  inputC reportFun reportRawFun
+  inputC reportFun reportRawFun
 
 mockInputC fun rawFun = do
   threadDelay 3000000

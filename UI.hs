@@ -1,6 +1,8 @@
 {-# LANGUAGE NoMonomorphismRestriction, PackageImports, ScopedTypeVariables #-}
 module UI where
 
+import Debug.Trace (trace)
+
 import Common
 import Print
 
@@ -20,13 +22,15 @@ import Foreign.StablePtr
 import Data.Char (isNumber)
 import FFI
 
-import Data.List (lookup, findIndex, intercalate, find)
+import Data.List (lookup, findIndex, intercalate, find, nub, transpose)
 import Data.Maybe (fromJust, catMaybes)
 
 import Data.Time
 import System.Locale
 
 import Text.Printf
+
+import Control.Arrow
 
 import "mtl" Control.Monad.Trans
 
@@ -37,6 +41,7 @@ justLookup a xs = fromJust $ lookup a xs
 
 castEnum = toEnum . fromEnum
 
+showDate = formatTime defaultTimeLocale "%F"
 
 rowToCar xs =
     case justLookup "name" xs of
@@ -228,6 +233,64 @@ updateStatistics db statisticsModel treeviewStatistics = do
                                 [Node (name ++ ": " ++ show weight ++ " kg") [] | (name, weight) <- stats]
 
 
+data Load = Load {
+      identity :: Int, 
+      version :: Int,
+      date :: UTCTime,
+      seller :: String,
+      weight :: Double,
+      density :: Double,
+      dry :: Double,
+      paid :: Bool,
+      sampleNum :: Int,
+      protein :: Double,
+      grainType :: [Double]} deriving Show
+
+onIdentity l f = l { identity = f (identity l) }
+
+statRowToLoad :: [(String, Value)] -> Load
+statRowToLoad xs = 
+    case (justLookup "date" xs, justLookup "netWeight" xs, justLookup "seller" xs, justLookup "id" xs, justLookup "paid" xs, justLookup "version" xs, justLookup "density" xs, justLookup "dry" xs, justLookup "ohra" xs, justLookup "kaura" xs, justLookup "vehna" xs, justLookup "sampleNum" xs, justLookup "protein" xs) of 
+      (Int date, Double weight, Text seller, Int identity, Int paid, Int version, Double density, Double dry, Double ohra, Double kaura, Double vehna, Int sampleNum, Double protein) ->
+          Load (castEnum identity) 
+               (castEnum version) 
+               (readTime defaultTimeLocale "%s" (show date)) 
+               seller 
+               weight 
+               density 
+               dry 
+               (if paid == 1 then True else False)
+               (castEnum sampleNum)
+               protein
+               [ohra, kaura, vehna]
+
+showLoad (Load identity version date seller weight density dry paid sampleNum protein types) = (seller, show weight, show date, paid)
+
+
+-- insert values into a treeStore so that the first value in a given treePath is the root of that tree, and everything that comes afterward is children of that
+-- fails if p is []
+--treeStoreInsertInOrder :: TreeStore a -> TreePath -> a -> IO ()
+treeStoreInsertInOrder t p v =
+    do existing <- treeStoreLookup t p
+       case existing of
+         Nothing -> treeStoreInsert t (init p) (last p) v
+         Just tn ->
+             treeStoreInsert t p (length $ subForest tn) v
+
+updatePayments db paymentsModel = do
+  treeStoreClear paymentsModel
+  smallestIdContent <- execStatement db "select id from loads order by id asc limit 1"
+  let modId :: Int -> Int
+      modId = case smallestIdContent of
+                Right [[[("id", Int identity)]]] -> (subtract (castEnum identity))
+                _ -> id
+
+  content <- execStatement db "select sampleNum, date, netWeight, seller, paid, id, version, dryStuff as dry, density, protein, ohra, kaura, vehna from loads order by id asc, version desc"
+  case content of
+    Left _ -> return ()
+    Right [xs] -> mapM_ (\x -> do let toAdd = (\l -> ([modId (identity l)], l)) . statRowToLoad $ x
+                                  uncurry (treeStoreInsertInOrder paymentsModel) toAdd) $ xs
+
 setUpStatisticsView view = do
   model <- treeStoreNew []
   treeViewSetModel view model
@@ -270,6 +333,74 @@ setUpLoadsView view = do
   treeViewAppendColumn view columnTime
 
   return model
+
+
+setupPaymentsView view = do
+  model <- treeStoreNew []
+  sortedModel <- treeModelSortNewWithModel model
+  treeViewSetModel view sortedModel
+
+--treeViewSetHeadersClickable view True
+
+  let sortFuncOn f = (\a b -> do
+                        aPath <- treeModelGetPath model a
+                        bPath <- treeModelGetPath model b
+                        aValue <- treeStoreGetValue model aPath
+                        bValue <- treeStoreGetValue model bPath
+                        return $ compare (f aValue) (f bValue))
+
+  rendererSeller <- cellRendererTextNew
+  rendererNetWeight <- cellRendererTextNew
+  rendererTime <- cellRendererTextNew
+  rendererSample <- cellRendererTextNew
+  rendererPaid <- cellRendererToggleNew
+
+  set rendererPaid [ cellToggleActivatable := False ]
+
+  columnSeller <- treeViewColumnNew
+  columnNetWeight <- treeViewColumnNew
+  columnTime <- treeViewColumnNew
+  columnSample <- treeViewColumnNew
+  columnPaid <- treeViewColumnNew  
+
+  cellLayoutPackStart columnSeller rendererSeller True
+  cellLayoutPackStart columnNetWeight rendererNetWeight True
+  cellLayoutPackStart columnTime rendererTime True
+  cellLayoutPackStart columnSample rendererSample True
+  cellLayoutPackStart columnPaid rendererPaid True
+
+  cellLayoutSetAttributes columnSeller rendererSeller model $ \l -> [ cellText := seller l ]
+  cellLayoutSetAttributes columnNetWeight rendererNetWeight model $ \l -> [ cellText := show (weight l) ]
+  cellLayoutSetAttributes columnTime rendererTime model $ \l -> [ cellText := showDate (date l) ]
+  cellLayoutSetAttributes columnSample rendererSample model $ \l -> [ cellText := show (sampleNum l) ]
+  cellLayoutSetAttributes columnPaid rendererPaid model $ \l -> [ cellToggleActive := paid l ]
+
+  treeSortableSetSortFunc sortedModel 0 (sortFuncOn seller)
+  treeSortableSetSortFunc sortedModel 1 (sortFuncOn weight)
+  treeSortableSetSortFunc sortedModel 2 (sortFuncOn date)
+  treeSortableSetSortFunc sortedModel 3 (sortFuncOn sampleNum)
+  treeSortableSetSortFunc sortedModel 4 (sortFuncOn paid)
+
+
+  treeViewColumnSetTitle columnSeller "Isäntä"
+  treeViewColumnSetTitle columnNetWeight "Paino"
+  treeViewColumnSetTitle columnTime "Aika"
+  treeViewColumnSetTitle columnSample "Näytenro"
+  treeViewColumnSetTitle columnPaid "Maksettu"
+
+  treeViewColumnSetSortColumnId columnSeller 0
+  treeViewColumnSetSortColumnId columnNetWeight 1
+  treeViewColumnSetSortColumnId columnTime 2
+  treeViewColumnSetSortColumnId columnSample 3
+  treeViewColumnSetSortColumnId columnPaid 4
+
+  treeViewAppendColumn view columnSeller
+  treeViewAppendColumn view columnNetWeight
+  treeViewAppendColumn view columnTime
+  treeViewAppendColumn view columnSample
+  treeViewAppendColumn view columnPaid
+
+  return (model, sortedModel)
 
 setupWindowInWindowMenu window menuItem = do
   onToggle menuItem $ do
@@ -357,6 +488,69 @@ complainAboutMissingData xs =
                  dialogRun dialog
                  widgetDestroy dialog
                  return ()
+
+
+-- scale a list of doubles so that the sum of the whole thing is 1
+toDistribution :: [Double] -> [Double]
+toDistribution [] = []
+toDistribution xs = 
+    let s = sum xs in 
+    map (/s) xs
+
+printGrainDistribution :: [Double] -> String
+printGrainDistribution [ohra, kaura, vehna] =
+    intercalate ", " $ catMaybes $
+    [if ohra > 0 then Just $ printf "Ohraa %.0f%%" (100 * ohra) else Nothing,
+     if kaura > 0 then Just $ printf "Kauraa %.0f%%" (100 * kaura) else Nothing,
+     if vehna > 0 then Just $ printf "Vehnää %.0f%%" (100 * vehna) else Nothing]
+
+loadPrice db weights density moisture = 
+    let correctedDensity = (density +) $ min 8 $ max 0 $ fromIntegral $ ((round moisture - 15) `div` 3)
+        moistureFactor = (100 - moisture) / 86
+        mohraFactor = snd `fmap` find ((correctedDensity >=) . fst) (zip kkhlp ohraPrice)
+        mkauraFactor = snd `fmap` find ((correctedDensity >=) . fst) (zip kkhlp kauraPrice)
+        mvehnaFactor = snd `fmap` find ((correctedDensity >=) . fst) (zip kkhlp vehnaPrice)
+    in do
+      marketPricesM <- getMarketPrices db
+      case (marketPricesM, mohraFactor, mkauraFactor, mvehnaFactor) of
+         (Just marketPrices, Just ohraFactor, Just kauraFactor, Just vehnaFactor) -> 
+             return $ Just $ (/1000) $ sum $ zipWith3 (\x y z -> x * y * z * moistureFactor) weights marketPrices [ohraFactor, kauraFactor, vehnaFactor]
+         _ -> return Nothing
+
+kkhlp = [70,68,66,64,62,60,58,56,54,52,50,48,46,44,42,40,38,36,34,32,30]
+
+vehnaPrice = replicate 20 1 -- for now
+
+kauraPrice = [0.0,0.0,0.0,1.0,1.0,1.0,0.99,0.97,0.95,0.91,0.87,0.83,0.79,0.75,0.71,0.67,0.63,0.59,0.55,0.51,0.47]
+ohraPrice = [1.0,1.0,1.0,1.0,0.98,0.96,0.94,0.92,0.89,0.86,0.83,0.8,0.77,0.73,0.7,0.67,0.63,0.6,0.56,0.52,0.48]
+
+getMarketPrices db = do
+  time <- getCurrentTime
+  let (year, month, day) = toGregorian . utctDay $ time
+  content <- execParamStatement db 
+             "select ohraPrice, vehnaPrice, kauraPrice from grainPrices \
+             \where date <= :date \
+             \order by date desc limit 1"
+            [(":date", Text $ printf "%04i-%02i-%02i" year month day)]
+  case content of
+    Left err -> return Nothing -- todo: do something more useful?
+    Right [[]] -> return Nothing -- query was ok, but there was nothing in the database to see
+    Right [[currentPrices]] -> do
+        case (justLookup "ohraPrice" currentPrices, justLookup "kauraPrice" currentPrices, justLookup "vehnaPrice" currentPrices) of
+          (Double ohraPrice, Double kauraPrice, Double vehnaPrice) ->
+              return $ Just [ohraPrice, kauraPrice, vehnaPrice]
+          _ -> return Nothing
+    
+
+nothingSelected tv tm stm =
+    do s <- treeViewGetSelection tv
+       rows <- treeSelectionGetSelectedRows s
+       underlyingRows <- mapM (treeModelSortConvertPathToChildPath stm) rows
+       subtrees <- mapM (treeStoreLookup tm) underlyingRows
+       let selected = map rootLabel $ catMaybes subtrees
+       case selected of
+         [] -> return True
+         _ -> return False
 
 doUI = do
   initGUI
@@ -451,6 +645,7 @@ doUI = do
   statisticsMenuItem <- xmlGetWidget windowXml castToCheckMenuItem "statisticsMenuItem"
   recentLoadsMenuItem <- xmlGetWidget windowXml castToCheckMenuItem "recentLoadsMenuItem"
   weighingStatusMenuItem <- xmlGetWidget windowXml castToCheckMenuItem "weighingStatusMenuItem"
+  paymentsMenuItem <- xmlGetWidget windowXml castToCheckMenuItem "paymentsMenuItem"
 
   grainPricesCalendar <- xmlGetWidget windowXml castToCalendar "grainPricesCalendar"
   ohraPriceEntry <- xmlGetWidget windowXml castToEntry "ohraPrice"
@@ -458,17 +653,35 @@ doUI = do
   vehnaPriceEntry <- xmlGetWidget windowXml castToEntry "vehnaPrice"
   storePricesButton <- xmlGetWidget windowXml castToButton "storePricesButton"
 
+  paymentsWindow <- xmlGetWidget windowXml castToWindow "paymentsWindow"
+  paymentsView <- xmlGetWidget windowXml castToTreeView "paymentsView"
+
+  loadSellerLabel <- xmlGetWidget windowXml castToLabel "loadSellerLabel"
+  loadPriceLabel <- xmlGetWidget windowXml castToLabel "loadPriceLabel"
+  loadTypeLabel <- xmlGetWidget windowXml castToLabel "loadTypeLabel"
+  loadWeightEntry <- xmlGetWidget windowXml castToEntry "loadWeightEntry"
+  loadDryEntry <- xmlGetWidget windowXml castToEntry "loadDryEntry"
+  loadDensityEntry <- xmlGetWidget windowXml castToEntry "loadDensityEntry"
+  loadDateLabel <- xmlGetWidget windowXml castToLabel "loadDateLabel"
+  loadProteinEntry <- xmlGetWidget windowXml castToEntry "loadProteinEntry"
+  loadPaidToggle <- xmlGetWidget windowXml castToCheckButton "loadPaidToggle"
+ 
   sellersModel <- setUpSellersBox db sellersBox
   attachSellerModel addCarOwnerChoice sellersModel
+
+  saveLoadChangesButton <- xmlGetWidget windowXml castToButton "saveLoadChangesButton"
 
   setupWindowInWindowMenu grainPricesWindow grainPricesMenuItem
   setupWindowInWindowMenu statisticsWindow statisticsMenuItem
   setupWindowInWindowMenu lastLoadsWindow recentLoadsMenuItem
   setupWindowInWindowMenu weighingStatusWindow weighingStatusMenuItem
+  setupWindowInWindowMenu paymentsWindow paymentsMenuItem
 
   carsModel <- setUpCarsBox db carsBox sellersBox sellersModel
 
   lastLoadsModel <- setUpLoadsView lastLoadsView
+
+  (paymentsModel, sortedPaymentsModel)  <- setupPaymentsView paymentsView 
 
   setupCalendar db storePricesButton ohraPriceEntry kauraPriceEntry vehnaPriceEntry grainPricesCalendar
 
@@ -479,9 +692,6 @@ doUI = do
   on sellersBox changed $ do updateCarsBox db carsModel sellersBox sellersModel
                              numCars <- listStoreGetSize carsModel
                              when (numCars == 1) $ comboBoxSetActive carsBox 0
-
-  on buttonMeasureWeights buttonActivated $ do 
-    writeIORef takingWeightingsRef True
 
   onEditableChanged addSellerNameEntry $ 
      do text <- entryGetText addSellerNameEntry
@@ -546,8 +756,16 @@ doUI = do
                                 Nothing -> "###"
                                 Just price -> printf "%.0f" price ++ " e"
 
-                 r <- insertRow db "loads" [("seller", seller),
-                                            ("time", formatTime defaultTimeLocale "%s" time),
+                 -- load IDs can't just autoincrement because of versioning, so, find the first free load ID first
+
+                 newLoadIdContent <- execStatement db "select id from loads order by id desc limit 1"
+                 let identity = case newLoadIdContent of
+                                  Right [[[("id", Int x)]]] -> castEnum x
+                                  _ -> 0
+
+                 r <- insertRow db "loads" [("id", show identity),
+                                            ("seller", seller),
+                                            ("date", formatTime defaultTimeLocale "%s" time),
                                             ("netWeight", weight),
                                             ("dryStuff", dry),
                                             ("density", density),
@@ -594,8 +812,123 @@ doUI = do
         widgetHide grainTypeDialog
         return ()
 
-  after radioSeka buttonActivated $ do p <- toggleButtonGetActive radioSeka; when p doGrainTypeDialog
+  let updateLoadEntries = do
+        let combineSellers = intercalate ", " . nub
+            combineWeights = sum
+            combinePrices = sum
+--            combineTypes xs | trace (show xs) False = undefined
+            combineTypes = (\[ohrat, kaurat, vehnat] -> [sum ohrat, sum kaurat, sum vehnat]) . transpose
+            combineDates dates = (min dates, max dates)
+                                 
+            average xs = sum xs / fromIntegral (length xs)
 
+            combineDry = average
+            combineDensity = average
+
+        nothing <- nothingSelected paymentsView paymentsModel sortedPaymentsModel
+        when (not nothing) $ do
+          selection <- treeViewGetSelection paymentsView
+          rows <- treeSelectionGetSelectedRows selection
+          underlyingRows <- mapM (treeModelSortConvertPathToChildPath sortedPaymentsModel) rows
+          subtrees <- mapM (treeStoreLookup paymentsModel) underlyingRows
+          let selected = map rootLabel $ catMaybes subtrees
+
+          let w = map weight selected
+              paids = map paid selected
+              types = combineTypes $ zipWith (\m xs -> map (m*) xs) w (map grainType selected)
+              avgDensity = (/ average w) $ average $ zipWith (*) w $ map density selected
+              avgDry = (/ average w) $ average $ zipWith (*) w $ map dry selected
+              avgProtein = (/ average w) $ average $ zipWith (*) w $ map protein selected
+
+          labelSetText loadSellerLabel $ combineSellers (map seller selected)
+          entrySetText loadWeightEntry $ show $ combineWeights (map weight selected)
+          entrySetText loadDensityEntry $ printf "%.2f" $ avgDensity
+          entrySetText loadDryEntry $ printf "%.2f" $ avgDry
+          entrySetText loadProteinEntry $ printf "%.2f" $ avgProtein
+          labelSetText loadTypeLabel $ printGrainDistribution $ toDistribution $ types
+          labelSetText loadDateLabel ((showDate $ minimum $ map date selected) ++ " - " ++ (showDate $ maximum $ map date selected))
+
+          toggleButtonSetInconsistent loadPaidToggle False
+
+          if any (==True) paids
+             then if any (==False) paids
+                  then toggleButtonSetInconsistent loadPaidToggle True
+                  else toggleButtonSetActive loadPaidToggle True
+             else toggleButtonSetActive loadPaidToggle False
+        
+          price <- loadPrice db types avgDensity (100 - avgDry)
+          case price of
+            Nothing -> labelSetText loadPriceLabel "###"
+            Just x -> labelSetText loadPriceLabel (printf "%.2f" x ++ " eur")
+
+          case rows of
+            [_] -> do editableSetEditable loadWeightEntry True
+                      editableSetEditable loadDensityEntry True
+                      editableSetEditable loadDryEntry True
+                      editableSetEditable loadProteinEntry True
+            _ -> do editableSetEditable loadWeightEntry False
+                    editableSetEditable loadDensityEntry False
+                    editableSetEditable loadDryEntry False
+                    editableSetEditable loadProteinEntry False
+          return ()
+
+  let storeLoadChanges = do
+        selection <- treeViewGetSelection paymentsView
+        rows <- treeSelectionGetSelectedRows selection
+        underlyingRows <- mapM (treeModelSortConvertPathToChildPath sortedPaymentsModel) rows
+        subtrees <- mapM (treeStoreLookup paymentsModel) underlyingRows
+        let selected = map rootLabel $ catMaybes subtrees
+        forM_ selected $ \l@(Load identity version date seller weightOld densityOld dryOld paidOld sampleNum proteinOld types) ->
+            do versionContent <- execParamStatement db "select version from loads where id = :identity order by version desc limit 1" [(":identity", Int $ castEnum identity)]
+               let newVersion = case versionContent of
+                                  Right [[[("version", Int x)]]] -> 1 + castEnum x
+                                  _ -> 1
+
+               paid <- toggleButtonGetActive loadPaidToggle
+
+               (weight, density, dry, protein) <- case selected of
+                                           [_] -> do weight <- entryGetText loadWeightEntry
+                                                     density <- entryGetText loadDensityEntry
+                                                     dry <- entryGetText loadDryEntry
+                                                     protein <- entryGetText loadProteinEntry
+                                                     return (weight, density, dry, protein)
+                                           _ -> return (show weightOld, show densityOld, show dryOld, show proteinOld)
+
+               case (reads weight, reads density, reads dry, reads protein) of
+                 ([(_ :: Double, "")], [(_ :: Double, "")], [(_ :: Double, "")], [(_ :: Double, "")]) ->
+                     do e <- insertRow db "loads" [("id", show identity),
+                                                   ("seller", seller),
+                                                   ("date", formatTime defaultTimeLocale "%s" date),
+                                                   ("netWeight", weight),
+                                                   ("dryStuff", dry),
+                                                   ("density", density),
+                                                   ("sampleNum", show sampleNum),
+                                                   ("ohra", show (types !! 0)),
+                                                   ("kaura", show (types !! 1)),
+                                                   ("vehna", show (types !! 2)),
+                                                   ("paid", if paid then "1" else "0"),
+                                                   ("protein", protein),
+                                                   ("version", show newVersion)]
+                        case e of
+                          Nothing -> return ()
+                          Just error -> print error
+                 (eWeight, eDensity, eDry, eProtein) -> 
+                     complainAboutMissingData [readsValid "paino" eWeight,
+                                               readsValid "hehtolitrapaino" eDensity,
+                                               readsValid "kuiva-aine" eDry,
+                                               readsValid "valkuaisaine" eProtein]
+
+        updatePayments db paymentsModel
+
+
+  loadsSelection <- treeViewGetSelection paymentsView
+  treeSelectionSetMode loadsSelection SelectionMultiple
+  onSelectionChanged loadsSelection $ updateLoadEntries
+
+  on buttonMeasureWeights buttonActivated $ writeIORef takingWeightingsRef True
+
+  after radioSeka buttonActivated $ do p <- toggleButtonGetActive radioSeka; when p doGrainTypeDialog
+  on saveLoadChangesButton buttonActivated $ storeLoadChanges
   on buttonRecordLoad buttonActivated $ doConfirmRecordLoad
 
   statisticsModel <- setUpStatisticsView treeviewStatistics
@@ -604,56 +937,7 @@ doUI = do
   widgetShowAll win
   menuItemActivate weighingStatusMenuItem
 
+  updatePayments db paymentsModel
+
   mainGUI
 
--- scale a list of doubles so that the sum of the whole thing is 1
-toDistribution :: [Double] -> [Double]
-toDistribution [] = []
-toDistribution xs = 
-    let s = sum xs in 
-    map (/s) xs
-
-printGrainDistribution :: [Double] -> String
-printGrainDistribution [ohra, kaura, vehna] =
-    intercalate ", " $ catMaybes $
-    [if ohra > 0 then Just $ printf "Ohraa %.0f%%" (100 * ohra) else Nothing,
-     if kaura > 0 then Just $ printf "Kauraa %.0f%%" (100 * kaura) else Nothing,
-     if vehna > 0 then Just $ printf "Vehnää %.0f%%" (100 * vehna) else Nothing]
-
-loadPrice db weights density moisture = 
-    let correctedDensity = (density +) $ min 8 $ max 0 $ fromIntegral $ ((round moisture - 15) `div` 3)
-        moistureFactor = (100 - moisture) / 86
-        mohraFactor = snd `fmap` find ((correctedDensity >=) . fst) (zip kkhlp ohraPrice)
-        mkauraFactor = snd `fmap` find ((correctedDensity >=) . fst) (zip kkhlp kauraPrice)
-        mvehnaFactor = snd `fmap` find ((correctedDensity >=) . fst) (zip kkhlp vehnaPrice)
-    in do
-      marketPricesM <- getMarketPrices db
-      case (marketPricesM, mohraFactor, mkauraFactor, mvehnaFactor) of
-         (Just marketPrices, Just ohraFactor, Just kauraFactor, Just vehnaFactor) -> 
-             return $ Just $ (/1000) $ sum $ zipWith3 (\x y z -> x * y * z * moistureFactor) weights marketPrices [ohraFactor, kauraFactor, vehnaFactor]
-         _ -> return Nothing
-
-kkhlp = [70,68,66,64,62,60,58,56,54,52,50,48,46,44,42,40,38,36,34,32,30]
-
-vehnaPrice = replicate 20 1 -- for now
-
-kauraPrice = [0.0,0.0,0.0,1.0,1.0,1.0,0.99,0.97,0.95,0.91,0.87,0.83,0.79,0.75,0.71,0.67,0.63,0.59,0.55,0.51,0.47]
-ohraPrice = [1.0,1.0,1.0,1.0,0.98,0.96,0.94,0.92,0.89,0.86,0.83,0.8,0.77,0.73,0.7,0.67,0.63,0.6,0.56,0.52,0.48]
-
-getMarketPrices db = do
-  time <- getCurrentTime
-  let (year, month, day) = toGregorian . utctDay $ time
-  content <- execParamStatement db 
-             "select ohraPrice, vehnaPrice, kauraPrice from grainPrices \
-             \where date <= :date \
-             \order by date desc limit 1"
-            [(":date", Text $ printf "%04i-%02i-%02i" year month day)]
-  case content of
-    Left err -> return Nothing -- todo: do something more useful?
-    Right [[]] -> return Nothing -- query was ok, but there was nothing in the database to see
-    Right [[currentPrices]] -> do
-        case (justLookup "ohraPrice" currentPrices, justLookup "kauraPrice" currentPrices, justLookup "vehnaPrice" currentPrices) of
-          (Double ohraPrice, Double kauraPrice, Double vehnaPrice) ->
-              return $ Just [ohraPrice, kauraPrice, vehnaPrice]
-          _ -> return Nothing
-    
