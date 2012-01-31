@@ -1955,11 +1955,30 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkButton" id="saveLoadChangesButton">
-                <property name="label" translatable="yes">Tallenna muutokset</property>
+              <widget class="GtkHBox" id="hbox15">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <child>
+                  <widget class="GtkButton" id="saveToFileButton">
+                    <property name="label" translatable="yes">Kirjaa tiedostoon</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkButton" id="saveLoadChangesButton">
+                    <property name="label" translatable="yes">Tallenna muutokset</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </widget>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
               </widget>
               <packing>
                 <property name="position">1</property>

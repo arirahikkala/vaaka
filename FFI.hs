@@ -11,8 +11,7 @@ import Control.Monad
 import Data.IORef
 import SQLite (insertRow, upsertRow)
 import Database.SQLite hiding (insertRow)
-
-import Graphics.UI.SDL.Mixer
+import Data.Maybe
 
 import Control.Concurrent (threadDelay)
 import System.Random (randomIO, randomRIO)
@@ -21,9 +20,15 @@ foreign import ccall safe "Input.h input" inputC :: FunPtr (CDouble -> CInt -> I
 foreign import ccall "wrapper" wrapReportProcessed :: (CDouble -> CInt -> IO ()) -> IO (FunPtr (CDouble -> CInt -> IO ()))
 foreign import ccall "wrapper" wrapReportRaw :: (CDouble -> IO ()) -> IO (FunPtr (CDouble -> IO ()))
 
+maybeRead :: Read a => String -> Maybe a
+maybeRead s = 
+	case reads s of
+	  [(x, "")] -> Just x
+	  _ -> Nothing
+
 updateWeights netWeightLabel fullWeightLabel tareWeightLabel emptyEntries fullEntries = do
-  emptyWeights <- map read `fmap` map ('0':) `fmap` mapM entryGetText emptyEntries
-  fullWeights <- map read `fmap` map ('0':) `fmap` mapM entryGetText fullEntries
+  emptyWeights <- catMaybes `fmap` map maybeRead `fmap` map ('0':) `fmap` mapM entryGetText emptyEntries
+  fullWeights <- catMaybes `fmap` map maybeRead `fmap` map ('0':) `fmap` mapM entryGetText fullEntries
   labelSetText netWeightLabel (show (sum (fullWeights :: [Double]) - sum (emptyWeights :: [Double])))
   labelSetText fullWeightLabel (show $ sum fullWeights)
   labelSetText tareWeightLabel (show $ sum emptyWeights)

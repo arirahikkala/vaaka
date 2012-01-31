@@ -1,10 +1,10 @@
-{-# LANGUAGE NoMonomorphismRestriction, PackageImports, ScopedTypeVariables #-}
+{-# LANGUAGE NoMonomorphismRestriction, PackageImports, ScopedTypeVariables, ParallelListComp #-}
 module UI where
 
 import Debug.Trace (trace)
 
 import Common
-import Print
+-- import Print
 
 import SQLite (insertRow, upsertRow)
 import Database.SQLite hiding (insertRow)
@@ -22,8 +22,8 @@ import Foreign.StablePtr
 import Data.Char (isNumber)
 import FFI
 
-import Data.List (lookup, findIndex, intercalate, find, nub, transpose)
-import Data.Maybe (fromJust, catMaybes)
+import Data.List (lookup, findIndex, intercalate, find, nub, transpose, zipWith6)
+import Data.Maybe (fromJust, catMaybes, isNothing)
 
 import Data.Time
 import System.Locale
@@ -32,10 +32,10 @@ import Text.Printf
 
 import Control.Arrow
 
-import "mtl" Control.Monad.Trans
+import Data.Set (Set)
+import qualified Data.Set as Set
 
-import qualified Graphics.UI.SDL as SDL
-import qualified Graphics.UI.SDL.Mixer as Mixer 
+import "mtl" Control.Monad.Trans
 
 justLookup a xs = fromJust $ lookup a xs
 
@@ -170,7 +170,7 @@ setupWeightsDialogs db radioWeighAsEmpty radioWeighAsFull indexCurrentlyBeingWei
                                        return (e1, e2))
 
            forM_ (emptyEntries ++ fullEntries) $ \e -> 
-               onEditableChanged e $ updateWeights netWeightLabel fullWeightLabel tareWeightLabel emptyEntries fullEntries
+               afterEditableChanged e $ updateWeights netWeightLabel fullWeightLabel tareWeightLabel emptyEntries fullEntries
 
            updateWeights netWeightLabel fullWeightLabel tareWeightLabel emptyEntries fullEntries
 
@@ -273,11 +273,17 @@ showLoad (Load identity version date seller weight density dry paid sampleNum pr
 treeStoreInsertInOrder t p v =
     do existing <- treeStoreLookup t p
        case existing of
-         Nothing -> treeStoreInsert t (init p) (last p) v
+         Nothing -> treeStoreInsert t (init p) (last p) v >> return p
          Just tn ->
-             treeStoreInsert t p (length $ subForest tn) v
+             treeStoreInsert t p (length $ subForest tn) v >> return (p ++ [length $ subForest tn])
 
-updatePayments db paymentsModel = do
+updatePayments db paymentsView sortedPaymentsModel paymentsModel = do
+  selection <- treeViewGetSelection paymentsView
+  rows <- treeSelectionGetSelectedRows selection
+  underlyingRows <- mapM (treeModelSortConvertPathToChildPath sortedPaymentsModel) rows
+  subtrees <- mapM (treeStoreLookup paymentsModel) underlyingRows
+  let selected = Set.fromList $ map (identity &&& version) $ map rootLabel $ catMaybes subtrees
+
   treeStoreClear paymentsModel
   smallestIdContent <- execStatement db "select id from loads order by id asc limit 1"
   let modId :: Int -> Int
@@ -287,9 +293,13 @@ updatePayments db paymentsModel = do
 
   content <- execStatement db "select sampleNum, date, netWeight, seller, paid, id, version, dryStuff as dry, density, protein, ohra, kaura, vehna from loads order by id asc, version desc"
   case content of
-    Left _ -> return ()
-    Right [xs] -> mapM_ (\x -> do let toAdd = (\l -> ([modId (identity l)], l)) . statRowToLoad $ x
-                                  uncurry (treeStoreInsertInOrder paymentsModel) toAdd) $ xs
+    Left _ -> print content
+    Right [xs] -> forM_ xs (\x -> do let toAdd = (\l -> ([modId (identity l)], l)) . statRowToLoad $ x
+                                     path <- uncurry (treeStoreInsertInOrder paymentsModel) toAdd
+                                     underlyingPath <- treeModelSortConvertChildPathToPath sortedPaymentsModel path
+                                     when (Set.member ((identity &&& version) $ snd toAdd) selected) $ treeSelectionSelectPath selection path)
+
+  
 
 setUpStatisticsView view = do
   model <- treeStoreNew []
@@ -403,7 +413,8 @@ setupPaymentsView view = do
   return (model, sortedModel)
 
 setupWindowInWindowMenu window menuItem = do
-  onToggle menuItem $ do
+  on menuItem checkMenuItemToggled $ do
+    printf "hi"
     state <- checkMenuItemGetActive menuItem
     case state of
       True -> widgetShowAll window
@@ -505,24 +516,25 @@ printGrainDistribution [ohra, kaura, vehna] =
      if vehna > 0 then Just $ printf "Vehnää %.0f%%" (100 * vehna) else Nothing]
 
 loadPrice db weights density moisture = 
-    let correctedDensity = (density +) $ min 8 $ max 0 $ fromIntegral $ ((round moisture - 15) `div` 3)
-        moistureFactor = (100 - moisture) / 86
-        mohraFactor = snd `fmap` find ((correctedDensity >=) . fst) (zip kkhlp ohraPrice)
-        mkauraFactor = snd `fmap` find ((correctedDensity >=) . fst) (zip kkhlp kauraPrice)
-        mvehnaFactor = snd `fmap` find ((correctedDensity >=) . fst) (zip kkhlp vehnaPrice)
+    let moistureFactor = (100 - moisture) / 86
+        mohraFactor = snd `fmap` find ((density >=) . fst) ohraHlp
+        mkauraFactor = snd `fmap` find ((density >=) . fst) kauraHlp
+        mvehnaFactor = snd `fmap` find ((density >=) . fst) vehnaHlp
     in do
       marketPricesM <- getMarketPrices db
       case (marketPricesM, mohraFactor, mkauraFactor, mvehnaFactor) of
          (Just marketPrices, Just ohraFactor, Just kauraFactor, Just vehnaFactor) -> 
-             return $ Just $ (/1000) $ sum $ zipWith3 (\x y z -> x * y * z * moistureFactor) weights marketPrices [ohraFactor, kauraFactor, vehnaFactor]
+             return $ Just $ (/1000) $ sum $ zipWith3 (\weight marketPrice densityFactor -> (marketPrice + densityFactor) * weight * moistureFactor) weights marketPrices [ohraFactor, kauraFactor, vehnaFactor]
          _ -> return Nothing
 
-kkhlp = [70,68,66,64,62,60,58,56,54,52,50,48,46,44,42,40,38,36,34,32,30]
+ohraHlp = [(71, 3), (70, 1), (64, 0), (63, -3), (62, -6), (61, -10), (60, -15), (59, -22), (58, -29), (0, -39)]
+kauraHlp = [(60, 3), (59, 1), (56, 0), (54, -3), (53, -6), (52, -10), (51, -15), (50, -29), (0, -39)]
+vehnaHlp = [(76, 0), (75, -1), (74, -1.5), (73, -2.5), (72, -4.5), (71, -5), (70, -6), (0, -20)]
 
-vehnaPrice = replicate 20 1 -- for now
-
-kauraPrice = [0.0,0.0,0.0,1.0,1.0,1.0,0.99,0.97,0.95,0.91,0.87,0.83,0.79,0.75,0.71,0.67,0.63,0.59,0.55,0.51,0.47]
-ohraPrice = [1.0,1.0,1.0,1.0,0.98,0.96,0.94,0.92,0.89,0.86,0.83,0.8,0.77,0.73,0.7,0.67,0.63,0.6,0.56,0.52,0.48]
+kkhlpProAgria = [70,68,66,64,62,60,58,56,54,52,50,48,46,44,42,40,38,36,34,32,30]
+vehnaPriceProAgria = replicate 20 1 -- for now
+kauraPriceProAgria = [0.0,0.0,0.0,1.0,1.0,1.0,0.99,0.97,0.95,0.91,0.87,0.83,0.79,0.75,0.71,0.67,0.63,0.59,0.55,0.51,0.47]
+ohraPriceProAgria = [1.0,1.0,1.0,1.0,0.98,0.96,0.94,0.92,0.89,0.86,0.83,0.8,0.77,0.73,0.7,0.67,0.63,0.6,0.56,0.52,0.48]
 
 getMarketPrices db = do
   time <- getCurrentTime
@@ -556,7 +568,6 @@ doUI = do
   initGUI
 
   db <- openConnection "vaaka.db"
-  sampleNoteTemplatePixbuf <- pixbufNewFromFile "lappupohja_pieni.jpg"
 
 
   weightEntriesRef <- newIORef ([], [])
@@ -670,6 +681,7 @@ doUI = do
   attachSellerModel addCarOwnerChoice sellersModel
 
   saveLoadChangesButton <- xmlGetWidget windowXml castToButton "saveLoadChangesButton"
+  saveToFileButton <- xmlGetWidget windowXml castToButton "saveToFileButton"
 
   setupWindowInWindowMenu grainPricesWindow grainPricesMenuItem
   setupWindowInWindowMenu statisticsWindow statisticsMenuItem
@@ -760,7 +772,7 @@ doUI = do
 
                  newLoadIdContent <- execStatement db "select id from loads order by id desc limit 1"
                  let identity = case newLoadIdContent of
-                                  Right [[[("id", Int x)]]] -> castEnum x
+                                  Right [[[("id", Int x)]]] -> 1 + castEnum x
                                   _ -> 0
 
                  r <- insertRow db "loads" [("id", show identity),
@@ -855,11 +867,17 @@ doUI = do
                   then toggleButtonSetInconsistent loadPaidToggle True
                   else toggleButtonSetActive loadPaidToggle True
              else toggleButtonSetActive loadPaidToggle False
-        
-          price <- loadPrice db types avgDensity (100 - avgDry)
-          case price of
-            Nothing -> labelSetText loadPriceLabel "###"
-            Just x -> labelSetText loadPriceLabel (printf "%.2f" x ++ " eur")
+
+          prices <- sequence [loadPrice db (map (w*) x) y (100 - z) 
+                              | x <- map grainType selected
+                              | w <- map weight selected 
+                              | y <- map density selected
+                              | z <- map dry selected]
+          case any isNothing prices of
+            True -> labelSetText loadPriceLabel "###"
+            False -> labelSetText loadPriceLabel (printf "%.2f" (sum $ catMaybes prices) ++ " eur")
+
+--          price <- loadPrice db types avgDensity (100 - avgDry)
 
           case rows of
             [_] -> do editableSetEditable loadWeightEntry True
@@ -918,7 +936,37 @@ doUI = do
                                                readsValid "kuiva-aine" eDry,
                                                readsValid "valkuaisaine" eProtein]
 
-        updatePayments db paymentsModel
+        updatePayments db paymentsView sortedPaymentsModel paymentsModel
+
+  on saveToFileButton buttonActivated $ do
+    selection <- treeViewGetSelection paymentsView
+    rows <- treeSelectionGetSelectedRows selection
+    underlyingRows <- mapM (treeModelSortConvertPathToChildPath sortedPaymentsModel) rows
+    subtrees <- mapM (treeStoreLookup paymentsModel) underlyingRows
+    let selected = map rootLabel $ catMaybes subtrees
+    prices <- sequence [loadPrice db (map (w*) x) y (100 - z) 
+                            | x <- map grainType selected
+                            | w <- map weight selected 
+                            | y <- map density selected
+                            | z <- map dry selected]
+    let price = sum $ catMaybes prices
+        showPrice Nothing = "###"
+        showPrice (Just d) = printf "%9.2f" d
+        analysisPrice = length selected * 15
+
+    marketPrices <- fromJust `fmap` getMarketPrices db
+
+    writeFile "kuitti.txt"
+                  (intercalate ", " (nub $ map seller selected) ++ 
+                   "\n\nSovitut perushinnat: Ohra " ++ show (marketPrices !! 0) ++ " eur/t, kaura " ++ show (marketPrices !! 1) ++ " eur/t, vehna " ++ show (marketPrices !! 2) ++ " eur/t" ++
+                   "\n\n          Laji                 Nettopaino   Kuiva-aine   Hehtolitrapaino   Valkuaisaine   Hinta\n\n" ++
+                   (intercalate "\n" $ zipWith6 (printf "%-30s %8.2f kg  %8.2f %%   %9.2f kg/hl   %7.2f %%   %s eur") (map (printGrainDistribution . toDistribution . grainType) selected) (map weight selected) (map dry selected) (map density selected) (map protein selected) (map showPrice prices)) ++ "\n\n" ++
+                   "Kuormista yhteensä " ++ printf "%0.2f" (price * (1/1.13)) ++ " eur (ilman alv.)\n" ++
+                   "                   " ++ printf "%0.2f" price ++ " eur (alv. 13%)\n\n" ++
+                   " - analysointi " ++ show (length selected) ++ " * 15 eur = " ++ show analysisPrice ++ " eur (sis. alv 23%)\n\n" ++
+                   "Tilitetään " ++ printf "%0.2f eur" (price - fromIntegral analysisPrice) ++
+                   "\n\nAnalyysit: Tuula Kantola, Suomen Viljava OY, Ylivieska\n\n")
+                                
 
 
   loadsSelection <- treeViewGetSelection paymentsView
@@ -935,9 +983,9 @@ doUI = do
   on buttonUpdateStatistics buttonActivated $ updateStatistics db statisticsModel treeviewStatistics
 
   widgetShowAll win
-  menuItemActivate weighingStatusMenuItem
+--  menuItemActivate weighingStatusMenuItem
 
-  updatePayments db paymentsModel
+  updatePayments db paymentsView sortedPaymentsModel paymentsModel
 
   mainGUI
 
