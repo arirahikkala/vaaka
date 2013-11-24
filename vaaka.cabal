@@ -1,0 +1,18 @@
+Name: vaaka
+Version: 0.0
+Description: Vaakaohjelma
+Synopsis: A program for weighing stuff
+Category: Applications
+License: GPL
+License-file: COPYING
+Author: Ari Rahikkala
+Maintainer: ari.rahikkala@gmail.com
+Build-Type: Simple
+Cabal-version: >= 1.2
+
+Executable vaaka
+  Main-is: Main.hs
+  cc-options: -std=c99
+  ghc-options: -threaded
+  C-sources: cbits/Input.c
+  Build-Depends: base >= 3 && <5, gtk, glade, random, sqlite, time, old-locale, containers, mtl, process
