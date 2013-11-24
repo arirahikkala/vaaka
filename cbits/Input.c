@@ -136,9 +136,16 @@ void input (void (*reportProcessedWeight)(double, int), void (*reportRawWeight)(
 
 	srand (time (0));
 
-	serial = open ("/dev/ttyS0", O_RDWR | O_NOCTTY | O_NDELAY);
+	char *filenames[] = {"/dev/ttyS0", "/dev/ttyS1", "/dev/ttyUSB0"};
+	for (int i = 0; i < 3; i++) {
+		printf("%s\n", filenames[i]);
+		serial = open (filenames[i], O_RDWR | O_NOCTTY | O_NDELAY);
+		if (serial != -1)
+			continue;
+	}
+
 	if (serial == -1) {
-		perror ("unable to open /dev/ttyS1 - ");
+		perror ("unable to open any TTY device out of S0, S1 and USB0 - ");
 		fprintf (stderr, "%s", "Just outputting some random data then.\n");
 		while (1) {
 			sleep (1);
