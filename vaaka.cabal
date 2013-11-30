@@ -15,4 +15,4 @@ Executable vaaka
   cc-options: -std=c99
   ghc-options: -threaded
   C-sources: cbits/Input.c
-  Build-Depends: base >= 3 && <5, gtk, glade, random, sqlite, time, old-locale, containers, mtl, process
+  Build-Depends: base >= 3 && <5, gtk, glade, random, sqlite, time, old-locale, containers, mtl, process, aeson, bytestring

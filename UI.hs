@@ -1,4 +1,4 @@
-﻿{-# LANGUAGE NoMonomorphismRestriction, PackageImports, ScopedTypeVariables, ParallelListComp #-}
+﻿{-# LANGUAGE NoMonomorphismRestriction, PackageImports, ScopedTypeVariables, ParallelListComp, OverloadedStrings #-}
 module UI where
 
 import Debug.Trace (trace)
@@ -36,6 +36,11 @@ import Data.Set (Set)
 import qualified Data.Set as Set
 
 import "mtl" Control.Monad.Trans
+
+import qualified Data.Map as Map
+import qualified Data.Aeson as Aeson
+import qualified Data.ByteString.Lazy as B
+import Control.Applicative
 
 justLookup a xs = fromJust $ lookup a xs
 
@@ -564,11 +569,20 @@ nothingSelected tv tm stm =
          [] -> return True
          _ -> return False
 
+data Config = Config {
+      alv :: Double
+}
+
+instance Aeson.FromJSON Config where
+    parseJSON (Aeson.Object o) = Config <$> o Aeson..: "alv"
+
 doUI = do
   initGUI
 
   db <- openConnection "vaaka.db"
 
+  configFile <- B.readFile "config.json"
+  let config = (\(Just x) -> x) $ Aeson.decode configFile :: Config -- who says Haskell keeps you safe? Not if you're LIVING ON THE EDGE
 
   weightEntriesRef <- newIORef ([], [])
   takingWeightingsRef <- newIORef False
@@ -950,6 +964,7 @@ doUI = do
                             | y <- map density selected
                             | z <- map dry selected]
     let price = sum $ catMaybes prices
+        showPrice :: Maybe Double -> String
         showPrice Nothing = "###"
         showPrice (Just d) = printf "%9.2f" d
         analysisPrice = length selected * 15
@@ -961,8 +976,8 @@ doUI = do
                    "\n\nSovitut perushinnat: Ohra " ++ show (marketPrices !! 0) ++ " eur/t, kaura " ++ show (marketPrices !! 1) ++ " eur/t, vehna " ++ show (marketPrices !! 2) ++ " eur/t" ++
                    "\n\n          Laji                 Nettopaino   Kuiva-aine   Hehtolitrapaino   Valkuaisaine   Hinta\n\n" ++
                    (intercalate "\n" $ zipWith6 (printf "%-30s %8.2f kg  %8.2f %%   %9.2f kg/hl   %7.2f %%   %s eur") (map (printGrainDistribution . toDistribution . grainType) selected) (map weight selected) (map dry selected) (map density selected) (map protein selected) (map showPrice prices)) ++ "\n\n" ++
-                   "Kuormista yhteensä " ++ printf "%0.2f" (price * (1/1.13)) ++ " eur (ilman alv.)\n" ++
-                   "                   " ++ printf "%0.2f" price ++ " eur (alv. 13%)\n\n" ++
+                   "Kuormista yhteensä " ++ printf "%0.2f" (price * (1/(1 + alv config / 100))) ++ " eur (ilman alv.)\n" ++
+                   "                   " ++ printf "%0.2f" price ++ " eur (alv. " ++ show (alv config) ++ " %)\n\n" ++
                    " - analysointi " ++ show (length selected) ++ " * 15 eur = " ++ show analysisPrice ++ " eur (sis. alv 23%)\n\n" ++
                    "Tilitetään " ++ printf "%0.2f eur" (price - fromIntegral analysisPrice) ++
                    "\n\nAnalyysit: Tuula Kantola, Suomen Viljava OY, Ylivieska\n\n")
